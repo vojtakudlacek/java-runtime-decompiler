@@ -3,14 +3,19 @@ package org.jrd.backend.decompiling;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+
 public class JavapDisassemblerWrapper {
 
     public String decompile(byte[] bytecode, String[] options){
+        File tempByteFile = null;
+        File tempOutputFile = null;
         try {
-            File tempByteFile = bytesToFile(bytecode);
-            File tempOutputFile = File.createTempFile("decompile-output", ".java");
+            tempByteFile = bytesToFile(bytecode);
+            tempOutputFile = File.createTempFile("decompile-output", ".java");
             PrintWriter printWriter = new PrintWriter(tempOutputFile);
             StringBuilder OptionsString = new StringBuilder();
+            System.out.println(Arrays.toString(options));
             if (options != null){
                 for (String option: options){
                     OptionsString.append(option);
@@ -22,6 +27,13 @@ public class JavapDisassemblerWrapper {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             return "Exception while decompiling" + errors.toString();
+        } finally {
+            if (tempByteFile != null){
+                tempByteFile.delete();
+            }
+            if (tempByteFile != null){
+                tempOutputFile.delete();
+            }
         }
     }
 

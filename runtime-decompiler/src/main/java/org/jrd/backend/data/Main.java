@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class Main {
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception{
 
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
@@ -90,10 +90,19 @@ public class Main {
 //            Cli.listClasses();
         }
         if (commandline.hasOption("decompile")){
-            System.out.println(Arrays.toString(commandline.getOptionValues("decompile")));
-//            Cli.decompile();
+            String[] optionValues = commandline.getOptionValues("decompile");
+            String[] decompilerArgs = commandline.getArgs();
+            if (decompilerArgs.length > 1){
+                System.out.println("Too many arguments for decompile. Use single quotes to pass arguments to decompiler. eg. '-v -c'");
+                return;
+            } else {
+                if (decompilerArgs.length == 0){
+                } else {
+                    decompilerArgs = new String[]{decompilerArgs[0].replaceAll("'", "")};
+                }
+            }
+            Cli.decompile(optionValues[0], optionValues[1], optionValues[2], decompilerArgs);
         }
-        System.exit(0);
     }
 
     public static void setLookAndFeel(){

@@ -89,7 +89,7 @@ public class VmManager{
         notifyListeners();
     }
 
-    public VmInfo findVmFromPID(String param) {
+    public VmInfo findVmFromPID(String param) throws RuntimeException{
         int pid = Integer.valueOf(param);
         for (VmInfo vmInfo : vmInfoSet) {
             if (vmInfo.getVmPid() == pid) {

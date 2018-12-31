@@ -6,12 +6,14 @@ import org.jrd.backend.decompiling.DecompilerWrapperInformation;
 import org.jrd.backend.decompiling.PluginManager;
 import org.jrd.frontend.MainFrame.VmDecompilerInformationController;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 import java.util.List;
+
+import static org.jrd.frontend.MainFrame.VmDecompilerInformationController.createRequest; //TODO This needs to be moved
+import static org.jrd.frontend.MainFrame.VmDecompilerInformationController.submitRequest;
 
 public class Cli {
 
@@ -23,45 +25,34 @@ public class Cli {
         this.pluginManager = model.getPluginManager();
     }
 
-    public  void decompile(List<String> args, int i) throws Exception {
-        if (args.size() != 4) {
-//            throw new RuntimeException(DECOMPILE + " expects exactly three arguments - pid or url of JVM, fully classified class name and decompiler name (as set-up) or decompiler json file, or javap(see help)");
-        }
-        String jvmStr = args.get(i + 1);
-        String classStr = args.get(i + 2);
-        String decompilerName = args.get(i + 3);
-        try {
-            VmInfo vmInfo = vmManager.findVmFromPID(jvmStr);
-            VmDecompilerStatus result = obtainClass(vmInfo, classStr, vmManager);
-            byte[] bytes = Base64.getDecoder().decode(result.getLoadedClassBytes());
-            if (new File(decompilerName).exists() && decompilerName.toLowerCase().endsWith(".json")) {
-                throw new RuntimeException("Plugins loading directly from file is not implemented yet.");
-            }
-            if (decompilerName.startsWith("javap")) {
-                String[] split_name = decompilerName.split("-");
-                String[] options = new String[split_name.length-1];
-                for (int x = 1; x < split_name.length; x++) {
-                    options[x - 1] = "-" + split_name[x];
-                }
-                String decompile_output = pluginManager.decompile(findDecompiler("javap", pluginManager), bytes, options);
-                System.out.println(decompile_output);
-            } else {
-                DecompilerWrapperInformation decompiler = findDecompiler(decompilerName, pluginManager);
-                if (decompiler != null) {
-                    String decompiledClass = pluginManager.decompile(decompiler, bytes);
-                    System.out.println(decompiledClass);
-                } else {
-                    throw new RuntimeException("Decompiler " + decompilerName + " not found");
-                }
-            }
-        } catch (NumberFormatException e) {
-            try {
-                URL u = new URL(jvmStr);
-                throw new RuntimeException("Remote VM not yet implemented");
-            } catch (MalformedURLException ee) {
-                throw new RuntimeException("Second param was supposed to be URL or PID", ee);
+    public void decompile(String pid, String className, String decompiler, String[] args) throws Exception{
+
+        DecompilerWrapperInformation wrapperInformation = null;
+        for (DecompilerWrapperInformation wrapper : pluginManager.getWrappers()){
+            if (wrapper.getName().equals(decompiler)){
+                wrapperInformation = wrapper;
             }
         }
+        if (wrapperInformation == null){
+            return;
+        }
+
+        VmInfo vmInfo = null;
+        vmInfo = vmManager.findVmFromPID(pid);
+        if (wrapperInformation == null){
+            return;
+        }
+
+        AgentRequestAction request = createRequest(vmInfo, className, AgentRequestAction.RequestAction.BYTES);
+        String response = submitRequest(vmManager, request);
+        if (response.equals("error")) {
+            return;
+        }
+        VmDecompilerStatus vmStatus = vmInfo.getVmDecompilerStatus();
+        String bytesInString = vmStatus.getLoadedClassBytes();
+        byte[] bytes = Base64.getDecoder().decode(bytesInString);
+        String decompiledClass = pluginManager.decompile(wrapperInformation, bytes, args);
+        System.out.println(decompiledClass);
     }
 
     private DecompilerWrapperInformation findDecompiler(String decompilerName, PluginManager pluginManager) {
@@ -155,8 +146,8 @@ public class Cli {
     }
 
     private static VmDecompilerStatus obtainClass(VmInfo vmInfo, String clazz, VmManager manager) {
-        AgentRequestAction request = VmDecompilerInformationController.createRequest(vmInfo, clazz, AgentRequestAction.RequestAction.BYTES);
-        String response = VmDecompilerInformationController.submitRequest(manager, request);
+        AgentRequestAction request = createRequest(vmInfo, clazz, AgentRequestAction.RequestAction.BYTES);
+        String response = submitRequest(manager, request);
         if (response.equals("ok")) {
             return vmInfo.getVmDecompilerStatus();
         } else {
