@@ -237,7 +237,9 @@ public class DecompilerRequestReceiver {
         List<String> list = new ArrayList<>(Arrays.asList(array));
         list.removeAll(Arrays.asList("", null));
         List<String> list1 = new ArrayList<>();
-        for (String s : list) {
+        for (String s : list)
+        {
+            if(!s.contains("$$Lambda"))
                 list1.add(s);
         }
         java.util.Collections.sort(list1);
