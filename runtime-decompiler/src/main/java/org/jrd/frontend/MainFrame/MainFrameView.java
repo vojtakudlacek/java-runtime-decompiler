@@ -3,6 +3,7 @@ package org.jrd.frontend.MainFrame;
 import org.jrd.backend.data.VmInfo;
 import org.jrd.frontend.ConfigureFrame.ConfigureView;
 import org.jrd.frontend.LicenseFrame.LicenseView;
+import org.jrd.frontend.LicenseFrame.UsageView;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -41,6 +42,7 @@ public class MainFrameView {
     private JMenuItem jMenuItemLicense;
 
     private JDialog configureDialog;
+    private JDialog usageDialog;
     private JDialog licenseDialog;
 
     private ActionListener vmChangingListener;
@@ -220,6 +222,9 @@ public class MainFrameView {
         jMenuHelp = new JMenu("Help");
         jMenuItemAbout = new JMenuItem("About");
         jMenuItemUsage = new JMenuItem("Usage");
+        jMenuItemUsage.addActionListener(actionEvent -> {
+            usageDialog = new UsageView(this);
+        });
         jMenuItemLicense = new JMenuItem("License");
         jMenuItemLicense.addActionListener(actionEvent -> {
             licenseDialog = new LicenseView(this);

@@ -78,6 +78,7 @@
                     <directory>${licenseDir}</directory>
                     <includes>
                         <include>LICENSE</include>
+                        <include>USAGE</include>
                     </includes>
                 </resource>
             </resources>
