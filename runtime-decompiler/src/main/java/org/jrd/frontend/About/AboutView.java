@@ -1,4 +1,4 @@
-package org.jrd.frontend.LicenseFrame;
+package org.jrd.frontend.About;
 
 import org.jrd.frontend.MainFrame.MainFrameView;
 
@@ -8,25 +8,25 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class UsageView extends JDialog {
+public class AboutView extends JDialog {
 
-    JTextArea usageTextArea;
+    JTextArea aboutTextArea;
     JScrollPane scrollPane;
 
-    public UsageView(MainFrameView mainFrameView){
+    public AboutView(MainFrameView mainFrameView){
 
-        usageTextArea = new JTextArea();
-        scrollPane = new JScrollPane(usageTextArea);
+        aboutTextArea = new JTextArea();
+        scrollPane = new JScrollPane(aboutTextArea);
 
-        InputStream in = getClass().getResourceAsStream("/USAGE");
+        InputStream in = getClass().getResourceAsStream("/ABOUT");
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         StringBuilder sb = new StringBuilder();
         reader.lines().forEach(s -> sb.append(s).append('\n'));
-        usageTextArea.setText(sb.toString());
-        usageTextArea.setEditable(false);
-        usageTextArea.setCaretPosition(0);
+        aboutTextArea.setText(sb.toString());
+        aboutTextArea.setEditable(false);
+        aboutTextArea.setCaretPosition(0);
 
-        this.setTitle("Usage");
+        this.setTitle("About");
         this.setSize(new Dimension(650,600));
         this.setMinimumSize(new Dimension(250,330));
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
