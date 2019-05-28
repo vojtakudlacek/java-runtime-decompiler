@@ -239,7 +239,10 @@ public class DecompilerRequestReceiver {
         List<String> list1 = new ArrayList<>();
         for (String s : list)
         {
-            if(!s.contains("$$Lambda"))
+            if(s.contains("$$Lambda$") && !s.equals("$$Lambda$")){
+                if(s.charAt(s.indexOf("$$Lambda$") + 9) != '$')
+                    list1.add(s);
+            }else
                 list1.add(s);
         }
         java.util.Collections.sort(list1);
