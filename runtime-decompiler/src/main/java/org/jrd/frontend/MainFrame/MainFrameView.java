@@ -86,6 +86,7 @@ public class MainFrameView {
         localVmList.setName("localVmList");
         localVmList.setFixedCellHeight(80);
         localVmList.setCellRenderer(new VmListRenderer());
+
         localVmList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         //localVmList Listener
         localVmList.addMouseListener(new MouseAdapter() {
@@ -312,5 +313,12 @@ public class MainFrameView {
         if (selectedValue != null) {
             vmList.setSelectedValue(selectedValue, true);
         }
+    }
+
+    public void deselectAllVms()
+    {
+        localVmList.clearSelection();
+        ActionEvent event = new ActionEvent(remoteVmList, 0, null);
+        vmChangingListener.actionPerformed(event);
     }
 }

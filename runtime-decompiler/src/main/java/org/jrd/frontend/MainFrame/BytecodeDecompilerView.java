@@ -1,12 +1,14 @@
 package org.jrd.frontend.MainFrame;
 
 import org.jrd.backend.core.OutputController;
+import org.jrd.backend.data.Main;
 import org.jrd.backend.decompiling.DecompilerWrapperInformation;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -118,6 +120,12 @@ public class BytecodeDecompilerView {
         }
         );
 
+        JButton closeButton = new JButton("Deselect VM");
+        closeButton.addActionListener(actionEvent -> {
+            Main.deselectAllVms();
+
+        });
+
         topComboBox = new JComboBox<DecompilerWrapperInformation>();
 
         bytecodeSyntaxTextArea = new RSyntaxTextArea();
@@ -137,6 +145,7 @@ public class BytecodeDecompilerView {
 
         topButtonPanel.setLayout(new BorderLayout());
         topButtonPanel.add(topButton, BorderLayout.WEST);
+        topButtonPanel.add(closeButton, BorderLayout.CENTER);
         topButtonPanel.add(topComboBox, BorderLayout.EAST);
 
         leftScrollPanel = new JScrollPane(filteredClassesJlist);

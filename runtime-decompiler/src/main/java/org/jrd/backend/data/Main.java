@@ -6,6 +6,7 @@ import org.jrd.frontend.MainFrame.VmDecompilerInformationController;
 
 public class Main {
 
+    private static MainFrameView mainView;
 
     public static void main(String[] allargs) throws Exception {
         Model model = new Model();
@@ -15,7 +16,7 @@ public class Main {
         }
         if (cli.isGui()) {
             setLookAndFeel();
-            MainFrameView mainView = new MainFrameView();
+            mainView = new MainFrameView();
             VmDecompilerInformationController controller = new VmDecompilerInformationController(mainView, model);
         } else {
             cli.consumeCli();
@@ -34,6 +35,11 @@ public class Main {
                 break;
             }
         }
+    }
+
+    public static void deselectAllVms()
+    {
+        mainView.deselectAllVms();
     }
 
 }
